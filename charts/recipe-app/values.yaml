@@ -1,0 +1,28 @@
+# charts/recipe-app/values.yaml
+replicaCount: 2
+
+image:
+  repository: 600627353694.dkr.ecr.ap-south-1.amazonaws.com/nava-recipe-app
+  tag: latest
+  pullPolicy: Always
+
+mongodb:
+  enabled: true
+  auth:
+    existingSecret: mongodb-secret
+    userKey: MONGO_USERNAME
+    passwordKey: MONGO_PASSWORD
+  persistence:
+    enabled: true
+    existingClaim: mongodb-pvc
+
+ingress:
+  enabled: true
+  className: nginx
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+  hosts:
+    - host: recipe-app.hopto.org
+      paths:
+        - path: /
+          pathType: Prefix

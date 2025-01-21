@@ -1,0 +1,16 @@
+# charts/recipe-app/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-recipe-app
+  labels:
+    {{- include "recipe-app.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 5000
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "recipe-app.selectorLabels" . | nindent 4 }}
