@@ -7,9 +7,12 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/NavaSasson/gitops-config.git
-    targetRevision: main
-    path: charts/cert-manager-v1.16.2/cert-manager
+    chart: cert-manager
+    repoURL: https://charts.jetstack.io
+    targetRevision: v1.16.2
+    # repoURL: https://github.com/NavaSasson/gitops-config.git
+    # targetRevision: main
+    # path: charts/cert-manager-v1.16.2/cert-manager
     helm:
       values: |
         installCRDs: true
