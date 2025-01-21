@@ -8,5 +8,5 @@ appVersion: "1.0.0"
 dependencies:
   - name: mongodb
     version: "16.4.0"
-    repository: "file://../charts/mongodb-16.4.0.tgz"
-    # repository: "https://charts.bitnami.com/bitnami"
+    # repository: "file://../charts/mongodb-16.4.0.tgz"
+    repository: "https://charts.bitnami.com/bitnami"
