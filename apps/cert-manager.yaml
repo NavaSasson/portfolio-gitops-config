@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/NavaSasson/gitops-config.git
-    targetRevision: "v1.16.2"
+    targetRevision: main
     path: charts
     helm:
       values: |
