@@ -22,9 +22,9 @@ mongodb:
     existingSecret: "mongodb-secret"
     passwordKey: "mongodb-passwords"
     rootPasswordKey: "mongodb-root-password"
-    replicaSet: "rs0"
+    # replicaSet: "rs0"
     debug: true
-  architecture: replicaset
+  # architecture: replicaset
   replicaCount: 3
   service:
     type: ClusterIP
