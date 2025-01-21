@@ -1,24 +1,62 @@
 
-# charts/recipe-app/templates/deployment.yaml
+# # charts/recipe-app/templates/deployment.yaml
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: {{ .Release.Name }}-recipe-app
+# spec:
+#   replicas: {{ .Values.replicaCount }}
+#   selector:
+#     matchLabels:
+#       app: recipe-app
+#   template:
+#     metadata:
+#       labels:
+#         app: recipe-app
+#     spec:
+#       containers:
+#         - name: recipe-app
+#           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+#           ports:
+#             - containerPort: 5000
+#           env:
+#             - name: MONGO_PASSWORD
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: mongodb-secret
+#                   key: mongodb-passwords
+#             - name: MONGO_DB
+#               value: {{ .Values.mongodb.auth.databases | first }}
+#             - name: MONGO_USERNAME
+#               value: {{ .Values.mongodb.auth.usernames | first }}
+#             - name: MONGO_PORT
+#               value: "27017"
+#             - name: MONGO_HOST
+#               value: {{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}-recipe-app
+  labels:
+    {{- include "recipe-app.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: recipe-app
+      {{- include "recipe-app.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       labels:
-        app: recipe-app
+        {{- include "recipe-app.selectorLabels" . | nindent 8 }}
     spec:
       containers:
         - name: recipe-app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - containerPort: 5000
+              protocol: TCP
           env:
             - name: MONGO_PASSWORD
               valueFrom:
@@ -26,9 +64,9 @@ spec:
                   name: mongodb-secret
                   key: mongodb-passwords
             - name: MONGO_DB
-              value: {{ .Values.mongodb.auth.databases | first }}
+              value: {{ index .Values.mongodb.auth.databases 0 }}
             - name: MONGO_USERNAME
-              value: {{ .Values.mongodb.auth.usernames | first }}
+              value: {{ index .Values.mongodb.auth.usernames 0 }}
             - name: MONGO_PORT
               value: "27017"
             - name: MONGO_HOST

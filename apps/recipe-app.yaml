@@ -1,4 +1,24 @@
-# # apps/templates/recipe-app.yaml
+# # # apps/templates/recipe-app.yaml
+# # apiVersion: argoproj.io/v1alpha1
+# # kind: Application
+# # metadata:
+# #   name: recipe-app
+# #   namespace: argocd
+# # spec:
+# #   project: default
+# #   source:
+# #     repoURL: https://github.com/NavaSasson/gitops-config.git
+# #     targetRevision: HEAD
+# #     path: charts/recipe-app
+# #   destination:
+# #     server: https://kubernetes.default.svc
+# #     namespace: recipe-app
+# #   syncPolicy:
+# #     automated:
+# #       prune: true
+# #       selfHeal: true
+
+
 # apiVersion: argoproj.io/v1alpha1
 # kind: Application
 # metadata:
@@ -10,6 +30,10 @@
 #     repoURL: https://github.com/NavaSasson/gitops-config.git
 #     targetRevision: HEAD
 #     path: charts/recipe-app
+#     helm:
+#       valueFiles:
+#         - values.yaml
+#       version: v3
 #   destination:
 #     server: https://kubernetes.default.svc
 #     namespace: recipe-app
@@ -18,12 +42,13 @@
 #       prune: true
 #       selfHeal: true
 
-
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: recipe-app
   namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
   source:
@@ -31,9 +56,10 @@ spec:
     targetRevision: HEAD
     path: charts/recipe-app
     helm:
-      valueFiles:
-        - values.yaml
       version: v3
+      values: |
+        mongodb:
+          architecture: standalone
   destination:
     server: https://kubernetes.default.svc
     namespace: recipe-app
@@ -41,3 +67,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    # syncOptions:
+    #   - CreateNamespace=true

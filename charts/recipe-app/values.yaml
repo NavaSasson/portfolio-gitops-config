@@ -8,38 +8,53 @@ image:
 
 # MongoDB values
 mongodb:
-  persistence:
-    enabled: true
-    size: "4Gi"
-    storageClass: recipe-storage
-    accessModes:
-      - ReadWriteOnce
+  architecture: standalone  # Changed from replicaset to standalone for simplicity
   auth:
     enabled: true
     rootUser: root
     usernames: ["admin"]
     databases: ["recipes"]
     existingSecret: "mongodb-secret"
-    passwordKey: "mongodb-passwords"
-    rootPasswordKey: "mongodb-root-password"
-    # replicaSet: "rs0"
-    debug: true
-  # architecture: replicaset
-  replicaCount: 3
+  persistence:
+    enabled: true
+    size: "4Gi"
   service:
     type: ClusterIP
     ports:
       mongodb: 27017
-  arbiter:
-    enabled: false
-  securityContext:
-    enabled: true
-    fsGroup: 1001
-    runAsUser: 1001
-  containerSecurityContext:
-    enabled: true
-    runAsNonRoot: true
-    runAsUser: 1001
+# mongodb:
+#   persistence:
+#     enabled: true
+#     size: "4Gi"
+#     storageClass: recipe-storage
+#     accessModes:
+#       - ReadWriteOnce
+#   auth:
+#     enabled: true
+#     rootUser: root
+#     usernames: ["admin"]
+#     databases: ["recipes"]
+#     existingSecret: "mongodb-secret"
+#     passwordKey: "mongodb-passwords"
+#     rootPasswordKey: "mongodb-root-password"
+#     replicaSet: "rs0"
+#     debug: true
+#   architecture: replicaset
+#   replicaCount: 3
+#   service:
+#     type: ClusterIP
+#     ports:
+#       mongodb: 27017
+#   arbiter:
+#     enabled: false
+#   securityContext:
+#     enabled: true
+#     fsGroup: 1001
+#     runAsUser: 1001
+#   containerSecurityContext:
+#     enabled: true
+#     runAsNonRoot: true
+#     runAsUser: 1001
 
 ingress:
   enabled: true
