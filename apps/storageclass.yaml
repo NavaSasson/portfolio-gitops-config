@@ -1,0 +1,16 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: recipe-storage
+  annotations:
+    "helm.sh/hook": pre-install, pre-upgrade
+    "helm.sh/hook-weight": "-5"
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: ebs.csi.aws.com  # AWS EBS CSI Driver
+volumeBindingMode: WaitForFirstConsumer
+parameters:
+  type: gp3  # General Purpose SSD
+  encrypted: "true"  # Enable encryption at rest
+  tagSpecification_1: "Key=Name,Value=recipe-app-storage"
+reclaimPolicy: Retain
+allowVolumeExpansion: true
