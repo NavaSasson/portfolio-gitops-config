@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/NavaSasson/gitops-config.git
     targetRevision: main
-    path: charts
+    path: charts/ingress-nginx-4.12.0/ingress-nginx
   destination:
     server: https://kubernetes.default.svc
     namespace: ingress-nginx

@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/NavaSasson/gitops-config.git
     targetRevision: main
-    path: charts
+    path: charts/cert-manager-v1.16.2/cert-manager
     helm:
       values: |
         installCRDs: true
