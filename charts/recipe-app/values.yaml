@@ -22,6 +22,18 @@ mongodb:
     type: ClusterIP
     ports:
       mongodb: 27017
+  podSecurityContext:
+    enabled: false  # Disable this to avoid PodSecurityPolicy issues
+  containerSecurityContext:
+    enabled: false  # Disable this to avoid SecurityContext issues
+  networkPolicy:
+    enabled: false  # Disable NetworkPolicy
+  pdb:
+    enabled: false  # Disable PodDisruptionBudget
+  arbiter:
+    enabled: false
+  metrics:
+    enabled: false
 # mongodb:
 #   persistence:
 #     enabled: true
