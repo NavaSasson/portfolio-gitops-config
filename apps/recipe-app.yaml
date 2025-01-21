@@ -27,7 +27,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: git@github.com:NavaSasson/gitops-config.git
+    repoURL: https://github.com/NavaSasson/gitops-config.git
     targetRevision: HEAD
     path: charts/recipe-app
     helm:
