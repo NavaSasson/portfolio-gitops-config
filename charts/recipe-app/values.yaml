@@ -65,9 +65,8 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-production
-  hosts:
-    - host: recipe-app.hopto.org
+    clusterIssuer: letsencrypt-production
+  host: recipe-app.hopto.org
   tls:
     enabled: true
     secretName: recipe-app-tls
