@@ -30,10 +30,6 @@ spec:
     repoURL: https://github.com/NavaSasson/gitops-config.git
     targetRevision: HEAD
     path: charts/recipe-app
-    helm:
-      valueFiles:
-        - values.yaml
-      version: v3
   destination:
     server: https://kubernetes.default.svc
     namespace: recipe-app
