@@ -9,9 +9,9 @@ image:
 # MongoDB values
 mongodb:
   architecture: replicaset
-  replicaCount: 2
+  replicaCount: 3
   arbiter:
-    enabled: true
+    enabled: false
   auth:
     enabled: true
     rootUser: root
