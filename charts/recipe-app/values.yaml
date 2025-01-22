@@ -20,6 +20,8 @@ mongodb:
     existingSecret: "mongodb-secret"
     passwordKey: "mongodb-passwords"
     rootPasswordKey: "mongodb-root-password"
+    replicaSet: "rs0"
+    debug: true
   persistence:
     enabled: true
     size: "4Gi"
