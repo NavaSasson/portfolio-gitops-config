@@ -93,7 +93,8 @@ ingress:
     secretName: recipe-app-tls
 
 certManager:
-  server: https://acme-v02.api.letsencrypt.org/directory
+  # server: https://acme-v02.api.letsencrypt.org/directory
+  server: https://acme-staging-v02.api.letsencrypt.org/directory
   email: nava7386@gmail.com
 
 configMap:
