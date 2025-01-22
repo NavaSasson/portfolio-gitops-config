@@ -4,8 +4,6 @@ kind: Ingress
 metadata:
   name: {{ .Release.Name }}-ingress
   annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "20"
     nginx.ingress.kubernetes.io/rewrite-target: /
     cert-manager.io/cluster-issuer: {{ default "letsencrypt-staging" .Values.ingress.annotations.clusterIssuer }}
 spec:
@@ -28,3 +26,7 @@ spec:
       secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
 {{- end }}
+
+
+    # "helm.sh/hook": post-install
+    # "helm.sh/hook-weight": "20"
