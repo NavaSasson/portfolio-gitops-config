@@ -19,6 +19,13 @@ mongodb:
       memory: "1Gi"
   arbiter:
     enabled: true
+    resources:
+      requests:
+        cpu: "100m"
+        memory: "256Mi"
+      limits:
+        cpu: "200m"
+        memory: "512Mi"
   auth:
     enabled: true
     rootUser: root
@@ -39,6 +46,26 @@ mongodb:
     type: ClusterIP
     ports:
       mongodb: 27017
+  # pod anti-affinity to spread pods across nodes
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - mongodb
+          topologyKey: "kubernetes.io/hostname"
+  # proper security context
+  podSecurityContext:
+    enabled: true
+    fsGroup: 1001
+    sysctls: []
+  containerSecurityContext:
+    enabled: true
+    runAsUser: 1001
+    runAsNonRoot: true
 # mongodb:
 #   persistence:
 #     enabled: true
