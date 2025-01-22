@@ -57,6 +57,9 @@ spec:
           ports:
             - containerPort: 5000
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: recipe-app-conf
           env:
             - name: MONGO_PASSWORD
               valueFrom:
@@ -70,4 +73,4 @@ spec:
             - name: MONGO_PORT
               value: "27017"
             - name: MONGO_HOST
-              value: {{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local
+              value: "{{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local"

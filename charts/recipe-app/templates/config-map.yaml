@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: recipe-app-conf
+data:
+  LOG_LEVEL: {{ .Values.configMap.logLevel | quote }}
+  PERSISTENCE: {{ .Values.configMap.persistence | quote }}

@@ -8,13 +8,18 @@ image:
 
 # MongoDB values
 mongodb:
-  architecture: standalone  # Changed from replicaset to standalone for simplicity
+  architecture: replicaset
+  replicaCount: 3
+  arbiter:
+    enabled: false
   auth:
     enabled: true
     rootUser: root
     usernames: ["admin"]
     databases: ["recipes"]
     existingSecret: "mongodb-secret"
+    passwordKey: "mongodb-passwords"
+    rootPasswordKey: "mongodb-root-password"
   persistence:
     enabled: true
     size: "4Gi"
@@ -22,18 +27,6 @@ mongodb:
     type: ClusterIP
     ports:
       mongodb: 27017
-  podSecurityContext:
-    enabled: false  # Disable this to avoid PodSecurityPolicy issues
-  containerSecurityContext:
-    enabled: false  # Disable this to avoid SecurityContext issues
-  networkPolicy:
-    enabled: false  # Disable NetworkPolicy
-  pdb:
-    enabled: false  # Disable PodDisruptionBudget
-  arbiter:
-    enabled: false
-  metrics:
-    enabled: false
 # mongodb:
 #   persistence:
 #     enabled: true
@@ -72,9 +65,17 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-production
   hosts:
     - host: recipe-app.hopto.org
-      paths:
-        - path: /
-          pathType: Prefix
+  tls:
+    enabled: true
+    secretName: recipe-app-tls
+
+certManager:
+  server: https://acme-v02.api.letsencrypt.org/directory
+  email: nava7386@gmail.com
+
+configMap:
+  logLevel: "info"
+  persistence: "true"
