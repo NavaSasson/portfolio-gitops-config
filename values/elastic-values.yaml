@@ -30,7 +30,7 @@ volumeClaimTemplate:
   resources:
     requests:
       storage: 10Gi
-  storageClassName: world-news-storage
+  storageClassName: nava-ebs-sc
 
 persistence:
   labels:
