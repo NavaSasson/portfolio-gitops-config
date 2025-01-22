@@ -23,10 +23,9 @@ mongodb:
   persistence:
     enabled: true
     size: "4Gi"
-    storageClass: recipe-storage
+    storageClassName: recipe-storage
     accessModes:
       - ReadWriteOnce
-    size: "4Gi"
   service:
     type: ClusterIP
     ports:
