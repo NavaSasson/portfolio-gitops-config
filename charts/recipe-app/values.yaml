@@ -8,8 +8,15 @@ image:
 
 # MongoDB values
 mongodb:
-  architecture: replicaset
-  replicaCount: 3
+  architecture: standalone
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: "250m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1Gi"
   arbiter:
     enabled: false
   auth:
