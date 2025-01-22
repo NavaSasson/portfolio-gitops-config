@@ -31,7 +31,7 @@ mongodb:
     debug: true
   persistence:
     enabled: true
-    size: "10Gi"
+    size: "2Gi"
     storageClass: nava-ebs-sc
     accessModes:
       - ReadWriteOnce
