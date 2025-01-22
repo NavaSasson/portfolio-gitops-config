@@ -8,8 +8,8 @@ image:
 
 # MongoDB values
 mongodb:
-  architecture: standalone
-  replicaCount: 1
+  architecture: replicaset
+  replicaCount: 3
   resources:
     requests:
       cpu: "250m"
