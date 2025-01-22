@@ -3,7 +3,7 @@ replicaCount: 2
 
 image:
   repository: 600627353694.dkr.ecr.ap-south-1.amazonaws.com/nava-recipe-app
-  tag: latest
+  tag: ""
   pullPolicy: Always
 
 # MongoDB values
