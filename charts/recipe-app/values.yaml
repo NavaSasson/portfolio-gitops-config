@@ -23,7 +23,7 @@ mongodb:
   persistence:
     enabled: true
     size: "4Gi"
-    storageClassName: recipe-storage
+    storageClass: recipe-storage
     accessModes:
       - ReadWriteOnce
   service:
