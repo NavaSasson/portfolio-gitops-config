@@ -57,19 +57,6 @@ spec:
     path: charts/recipe-app
     helm:
       version: v3
-      parameters:
-        - name: mongodb.architecture
-          value: standalone
-        - name: mongodb.auth.enabled
-          value: "true"
-        - name: mongodb.podSecurityContext.enabled
-          value: "false"
-        - name: mongodb.containerSecurityContext.enabled
-          value: "false"
-        - name: mongodb.networkPolicy.enabled
-          value: "false"
-        - name: mongodb.pdb.enabled
-          value: "false"
   destination:
     server: https://kubernetes.default.svc
     namespace: recipe-app
