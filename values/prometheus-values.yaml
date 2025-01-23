@@ -40,6 +40,14 @@ prometheus:
         static_configs:
           - targets:
               - recipe-app.hopto.org
+
+      - job_name: 'recipe-app'
+        scheme: https
+        tls_config:
+          insecure_skip_verify: true  # Disable TLS verification
+        static_configs:
+          - targets: ['recipe-app.hopto.org:443']
+          
 grafana:
  enabled: true
  persistence:
