@@ -370,7 +370,7 @@ config:
     [OUTPUT]
         Name es
         Match kube.*
-        Host elasticsearch-master
+        Host elasticsearch-master*
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -389,7 +389,7 @@ config:
     [OUTPUT]
         Name es
         Match recipe-app.*
-        Host elasticsearch-master
+        Host elasticsearch-master*
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -408,7 +408,7 @@ config:
     [OUTPUT]
         Name es
         Match nginx.*
-        Host elasticsearch-master
+        Host elasticsearch-master*
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -427,7 +427,7 @@ config:
     [OUTPUT]
         Name es
         Match mongodb.*
-        Host elasticsearch-master
+        Host elasticsearch-master*
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -465,7 +465,7 @@ config:
     [OUTPUT]
         Name es
         Match prometheus_metrics
-        Host elasticsearch-master
+        Host elasticsearch-master*
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
