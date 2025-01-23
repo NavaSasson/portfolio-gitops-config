@@ -303,13 +303,6 @@ config:
         K8S-Logging.Parser On
 
     [FILTER]
-        Name grep
-        Match kube.*
-        Regex log ^(?!.*\bGET /health\b).*$
-        Buffer_Size False
-        K8S-Logging.Parser On
-
-    [FILTER]
         Name kubernetes
         Match nginx.*
         Merge_Log On
