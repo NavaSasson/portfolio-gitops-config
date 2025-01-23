@@ -446,7 +446,7 @@ config:
     [OUTPUT]
         Name es
         Match *
-        Host elasticsearch-master-hl.logging.svc.cluster.local
+        Host elasticsearch-master*
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
