@@ -74,3 +74,5 @@ spec:
               value: "27017"
             - name: MONGO_HOST
               value: "{{ .Release.Name }}-mongodb-headless.{{ .Release.Namespace }}.svc.cluster.local"
+            - name: MONGO_AUTH_SOURCE
+              value: recipes
