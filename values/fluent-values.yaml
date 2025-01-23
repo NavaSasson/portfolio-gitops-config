@@ -369,8 +369,8 @@ config:
   outputs: |
     [OUTPUT]
         Name es
-        Match kube.*
-        Host elasticsearch-master*
+        Match kube.var.log.containers.*kube*
+        Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -388,8 +388,8 @@ config:
 
     [OUTPUT]
         Name es
-        Match recipe-app.*
-        Host elasticsearch-master*
+        Match kube.var.log.containers.*recipe-app*
+        Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -407,8 +407,8 @@ config:
 
     [OUTPUT]
         Name es
-        Match nginx.*
-        Host elasticsearch-master*
+        Match kube.var.log.containers.*nginx*
+        Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -426,8 +426,8 @@ config:
 
     [OUTPUT]
         Name es
-        Match mongodb.*
-        Host elasticsearch-master*
+        Match kube.var.log.containers.*mongodb*
+        Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -445,8 +445,8 @@ config:
 
     [OUTPUT]
         Name es
-        Match *
-        Host elasticsearch-master*
+        Match kube.var.log.containers.*host*
+        Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
@@ -465,7 +465,7 @@ config:
     [OUTPUT]
         Name es
         Match prometheus_metrics
-        Host elasticsearch-master*
+        Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
         HTTP_User elastic
         HTTP_Passwd 9sRLSqZOhtUpSpyn
