@@ -494,6 +494,8 @@
         Match *
         Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
+        HTTP_User elastic
+        HTTP_Passwd 9sRLSqZOhtUpSpyn
         Logstash_Format true
         Logstash_Prefix fluent-bit
 
