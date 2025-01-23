@@ -482,32 +482,37 @@
 #         Trace_Error On
 
 
-input:
-  - name: tail
-    path: /var/log/containers/*.log
-    parser: docker
+input: |
+  [INPUT]
+      Name tail
+      Path /var/log/containers/*.log
+      Parser docker
 
-output:
-  - name: es
-    match: "*"
-    host: "elasticsearch-master.logging.svc.cluster.local"
-    port: 9200
-    logstash_format: true
-    logstash_prefix: fluent-bit
+output: |
+  [OUTPUT]
+      Name es
+      Match *
+      Host elasticsearch-master.logging.svc.cluster.local
+      Port 9200
+      Logstash_Format true
+      Logstash_Prefix fluent-bit
 
-filters:
-  - name: kubernetes
-    match: "*"
-    merge_log: true
-    keep_log: false
+filters: |
+  [FILTER]
+      Name kubernetes
+      Match *
+      Merge_Log true
+      Keep_Log false
 
-parsers:
-  - name: nginx
-    format: regex
-    regex: ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
-    time_key: time
-    time_format: "%d/%b/%Y:%H:%M:%S %z"
+parsers: |
+  [PARSER]
+      Name nginx
+      Format regex
+      Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?$
+      Time_Key time
+      Time_Format "%d/%b/%Y:%H:%M:%S %z"
 
-service:
-  log_level: info
-  daemon: off
+service: |
+  [SERVICE]
+      Log_Level info
+      Daemon off
