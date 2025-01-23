@@ -1,28 +1,120 @@
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: fluent
+#   namespace: argocd
+# spec:
+#   project: default
+#   sources:
+#     - repoURL: "https://fluent.github.io/helm-charts"
+#       chart: fluent-bit
+#       targetRevision: 0.46.7
+#       helm:
+#         valueFiles:
+#           - $values/values/fluent-values.yaml
+#     - repoURL: "https://github.com/NavaSasson/gitops-config.git"
+#       targetRevision: HEAD
+#       ref: values
+#   destination:
+#     server: "https://kubernetes.default.svc"
+#     namespace: logging
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - ServerSideApply=true
+#       - CreateNamespace=true
+#       - ApplyOutOfSyncOnly=true
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: fluent
-  namespace: argocd
+  name: fluent-bit
 spec:
-  project: default
-  sources:
-    - repoURL: "https://fluent.github.io/helm-charts"
-      chart: fluent-bit
-      targetRevision: 0.46.7
-      helm:
-        valueFiles:
-          - $values/values/fluent-values.yaml
-    - repoURL: "https://github.com/NavaSasson/gitops-config.git"
-      targetRevision: HEAD
-      ref: values
   destination:
-    server: "https://kubernetes.default.svc"
     namespace: logging
+    server: 'https://kubernetes.default.svc'
+  source:
+    repoURL: 'https://fluent.github.io/helm-charts'
+    targetRevision: 0.20.5
+    chart: fluent-bit
+    helm:
+      values: |
+        service:
+          log_level: debug
+
+        config:
+          parsers: |
+            [PARSER]
+                Name nginx
+                Format regex
+                Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?:(?:/recipe/(?:category/)?(?<id>[^\/\s\?"]*)?)|(?<path>[^\"]*?))(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")
+                Time_Key time
+                Time_Format %d/%b/%Y:%H:%M:%S %z
+
+            [PARSER]
+                Name app_json
+                Format json
+                Time_Key timestamp
+                Time_Format %Y-%m-%dT%H:%M:%S.%L
+                Time_Keep On
+
+          filters: |
+            [FILTER]
+                Name kubernetes
+                Match kube.*
+                Merge_Log On
+                Keep_Log Off
+                K8S-Logging.Parser On
+                K8S-Logging.Exclude On
+
+            [FILTER]
+                Name parser
+                Match kube.var.log.containers.*nginx*
+                Key_Name log
+                Parser nginx
+                Reserve_Data On
+
+            [FILTER]
+                Name modify
+                Match kube.var.log.containers.*nginx*
+                Add source nginx
+
+            [FILTER]
+                Name modify
+                Match kube.var.log.containers.*recipe*
+                Add source app
+
+          outputs: |
+            [OUTPUT]
+                Name es
+                Match kube.var.log.containers.*nginx*
+                Host elasticsearch-master.logging.svc.cluster.local
+                Port 9200
+                Index nginx-con-logs-%Y.%m.%d
+                Type _doc
+                Suppress_Type_Name On
+                Retry_Limit 20
+                Replace_Dots On
+                net.keepalive Off
+                Logstash_Format Off
+
+            [OUTPUT]
+                Name es
+                Match kube.var.log.containers.*recipe*
+                Host elasticsearch-master.logging.svc.cluster.local
+                Port 9200
+                Index recipe-app-logs-%Y.%m.%d
+                Type _doc
+                Suppress_Type_Name On
+                Retry_Limit 20
+                Replace_Dots On
+                net.keepalive Off
+                Logstash_Format Off
+
+  project: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - ServerSideApply=true
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
