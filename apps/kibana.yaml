@@ -7,16 +7,18 @@ spec:
     namespace: argocd
   source:
     repoURL: 'https://helm.elastic.co'
-    targetRevision: 7.17.3
+    targetRevision: 8.5.1
     chart: kibana
     helm:
       values: |
-        service:
-          type: ClusterIP
         resources:
           requests:
             cpu: "150m"
             memory: "256Mi"
+        extraEnvs:
+        - name: NODE_TLS_REJECT_UNAUTHORIZED
+          value: "0"
+        replicas: 1
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
@@ -27,4 +29,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-      

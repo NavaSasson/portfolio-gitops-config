@@ -44,6 +44,12 @@ spec:
             memory: "256Mi"
         replicas: 1
         minimumMasterNodes: 1
+        volumeClaimTemplate:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: nava-ebs-sc
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
