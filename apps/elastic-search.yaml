@@ -42,9 +42,8 @@ spec:
           requests:
             cpu: "150m"
             memory: "256Mi"
-        master:
-            masterOnly: false
-            replicaCount: 1
+        replicas: 1
+        minimumMasterNodes: 1
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
