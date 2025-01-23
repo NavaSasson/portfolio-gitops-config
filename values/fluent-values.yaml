@@ -366,10 +366,10 @@
 #         Time_Key time
 #         Time_Format %Y-%m-%dT%H:%M:%S.%LZ
 
-#   outputs: |
-#     [OUTPUT]
-#         Name es
-#         Match kube.*
+  # outputs: |
+  #   [OUTPUT]
+  #       Name es
+  #       Match kube.*
 #         Host elasticsearch-master*
 #         Port 9200
 #         HTTP_User elastic
@@ -462,33 +462,33 @@
 #         Buffer_Size 1MB
 #         Trace_Error On
 
-#     [OUTPUT]
-#         Name es
-#         Match prometheus_metrics
-#         Host elasticsearch-master*
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         Logstash_Format On
-#         Logstash_Prefix metrics
-#         Retry_Limit False
-#         Suppress_Type_Name On
-#         Time_Key @timestamp
-#         Include_Tag_Key On
-#         Tag_Key tag
-#         tls On
-#         tls.verify Off
-#         Buffer_Size 1MB
-#         Trace_Error On
+    # [OUTPUT]
+    #     Name es
+    #     Match prometheus_metrics
+    #     Host elasticsearch-master*
+    #     Port 9200
+    #     HTTP_User elastic
+    #     HTTP_Passwd 9sRLSqZOhtUpSpyn
+    #     Logstash_Format On
+    #     Logstash_Prefix metrics
+    #     Retry_Limit False
+    #     Suppress_Type_Name On
+    #     Time_Key @timestamp
+    #     Include_Tag_Key On
+    #     Tag_Key tag
+    #     tls On
+    #     tls.verify Off
+    #     Buffer_Size 1MB
+    #     Trace_Error On
 
-
-input: |
+  
+  input: |
     [INPUT]
         Name tail
         Path /var/log/containers/*.log
         Parser docker
 
-output: |
+  output: |
     [OUTPUT]
         Name es
         Match *
@@ -497,14 +497,14 @@ output: |
         Logstash_Format true
         Logstash_Prefix fluent-bit
 
-filters: |
+  filters: |
     [FILTER]
         Name kubernetes
         Match *
         Merge_Log true
         Keep_Log false
 
-parsers: |
+  parsers: |
     [PARSER]
         Name nginx
         Format regex
@@ -512,7 +512,7 @@ parsers: |
         Time_Key time
         Time_Format "%d/%b/%Y:%H:%M:%S %z"
 
-service: |
+  service: |
     [SERVICE]
         Daemon Off
         Flush 1
