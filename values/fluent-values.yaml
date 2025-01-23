@@ -300,14 +300,12 @@ config:
         Merge_Log On
         Keep_Log Off
         Buffer_Size False
-        K8S-Logging.Parser On
 
     [FILTER]
         Name kubernetes
         Match nginx.*
         Merge_Log On
         Buffer_Size False
-        K8S-Logging.Parser On
 
     [FILTER]
         Name parser
@@ -315,7 +313,6 @@ config:
         Key_Name log
         Parser nginx_parser
         Reserve_Data On
-        K8S-Logging.Parser On
 
     [FILTER]
         Name parser
