@@ -11,13 +11,11 @@ spec:
     targetRevision: 8.5.1
     chart: kibana
     helm:
-      values: |
-        service:
-          type: ClusterIP
-        resources:
-          requests:
-            cpu: "150m"
-            memory: "256Mi"
+        valueFiles:
+          - $values/values/kibana-values.yaml
+    - repoURL: "https://github.com/NavaSasson/gitops-config.git"
+      targetRevision: HEAD
+      ref: values
   destination:
     server: "https://kubernetes.default.svc"
     namespace: logging
