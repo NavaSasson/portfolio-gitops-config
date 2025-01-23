@@ -258,13 +258,11 @@ config:
         Tag kube.*
         Mem_Buf_Limit 5MB
         Skip_Long_Lines On
-        Parser docker
 
     [INPUT]
         Name tail
         Path /var/log/containers/recipe-app-ingress*.log
         Tag nginx.*
-        Parser docker
         Mem_Buf_Limit 100MB
         Skip_Long_Lines On
 
@@ -272,7 +270,6 @@ config:
         Name tail
         Path /var/log/containers/recipe-app-*.log
         Tag recipe-app.*
-        Parser docker
         Mem_Buf_Limit 100MB
         Skip_Long_Lines On
 
@@ -280,7 +277,6 @@ config:
         Name tail
         Path /var/log/containers/*mongodb*.log
         Tag mongodb.*
-        Parser docker
         Mem_Buf_Limit 100MB
         Skip_Long_Lines On
 
@@ -318,14 +314,14 @@ config:
         Name parser
         Match nginx.*
         Key_Name log
-        Parser nginx_parser
+        Parser nginx
         Reserve_Data On
 
     [FILTER]
         Name parser
         Match mongodb.*
         Key_Name log
-        Parser mongodb_parser
+        Parser mongodb
         Reserve_Data On
 
     [FILTER]
@@ -342,20 +338,14 @@ config:
 
   customParsers: |
     [PARSER]
-        Name docker
-        Format json
-        Time_Key time
-        Time_Format %Y-%m-%dT%H:%M:%S.%L%z
-
-    [PARSER]
-        Name nginx_parser
+        Name nginx
         Format regex
         Regex ^(?<remote_addr>[^ ]*) - (?<remote_user>[^ ]*) \[(?<time_local>[^\]]*)\] \"(?<method>[A-Z]+) (?<request>[^ ]*) (?<protocol>[^\"]*)\" (?<status>[0-9]{3}) (?<body_bytes_sent>[0-9]+) \"(?<http_referer>[^\"]*)\" \"(?<http_user_agent>[^\"]*)\"
         Time_Key time_local
         Time_Format %d/%b/%Y:%H:%M:%S %z
 
     [PARSER]
-        Name mongodb_parser
+        Name mongodb
         Format json
         Time_Key time
         Time_Format %Y-%m-%dT%H:%M:%S.%LZ
