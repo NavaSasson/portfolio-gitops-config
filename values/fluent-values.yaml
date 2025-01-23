@@ -451,7 +451,7 @@ config:
     [PARSER]
         Name nginx
         Format regex
-        Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?:(?:/api/news/country/(?<country>[^\"]*?))|(?<path>[^\"]*?))(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")
+        Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?:(?:/recipe/(?:category/)?(?<id>[^\/\s\?"]*)?)|(?<path>[^\"]*?))(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")
         Time_Key time
         Time_Format %d/%b/%Y:%H:%M:%S %z
 
@@ -485,7 +485,7 @@ config:
 
     [FILTER]
         Name modify
-        Match kube.var.log.containers.*world-news*
+        Match kube.var.log.containers.*recipe*
         Add source app
 
   outputs: |
@@ -504,10 +504,10 @@ config:
 
     [OUTPUT]
         Name es
-        Match kube.var.log.containers.*world-news*
+        Match kube.var.log.containers.*recipe*
         Host elasticsearch-master.logging.svc.cluster.local
         Port 9200
-        Index news-app-logs-%Y.%m.%d
+        Index recipe-app-logs-%Y.%m.%d
         Type _doc
         Suppress_Type_Name On
         Retry_Limit 20
