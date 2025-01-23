@@ -86,11 +86,11 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    clusterIssuer: letsencrypt-production
+    clusterIssuer: letsencrypt-staging
   host: recipe-app.hopto.org
   tls:
     enabled: true
-    secretName: recipe-app-tls
+    secretName: recipe-app-staging-tls
 
 certManager:
   # server: https://acme-v02.api.letsencrypt.org/directory
