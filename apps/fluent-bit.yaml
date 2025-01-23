@@ -1,31 +1,31 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: fluent
-  namespace: argocd
-spec:
-  project: default
-  sources:
-    - repoURL: "https://fluent.github.io/helm-charts"
-      chart: fluent-bit
-      targetRevision: 0.46.7
-      helm:
-        valueFiles:
-          - $values/values/fluent-values.yaml
-    - repoURL: "https://github.com/NavaSasson/gitops-config.git"
-      targetRevision: HEAD
-      ref: values
-  destination:
-    server: "https://kubernetes.default.svc"
-    namespace: logging
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - ServerSideApply=true
-      - CreateNamespace=true
-      - ApplyOutOfSyncOnly=true
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: fluent
+#   namespace: argocd
+# spec:
+#   project: default
+#   sources:
+#     - repoURL: "https://fluent.github.io/helm-charts"
+#       chart: fluent-bit
+#       targetRevision: 0.46.7
+#       helm:
+#         valueFiles:
+#           - $values/values/fluent-values.yaml
+#     - repoURL: "https://github.com/NavaSasson/gitops-config.git"
+#       targetRevision: HEAD
+#       ref: values
+#   destination:
+#     server: "https://kubernetes.default.svc"
+#     namespace: logging
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - ServerSideApply=true
+#       - CreateNamespace=true
+#       - ApplyOutOfSyncOnly=true
 
 # apiVersion: argoproj.io/v1alpha1
 # kind: Application
@@ -118,3 +118,5 @@ spec:
 #     automated:
 #       prune: true
 #       selfHeal: true
+
+

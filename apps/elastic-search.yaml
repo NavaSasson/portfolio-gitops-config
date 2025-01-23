@@ -1,26 +1,57 @@
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: elasticsearch
+#   namespace: argocd
+# spec:
+#   project: default
+#   sources:
+#     - repoURL: "https://charts.bitnami.com/bitnami"
+#       chart: elasticsearch
+#       targetRevision: 21.1.0
+#       helm:
+#         valueFiles:
+#           - $values/values/elastic-values.yaml
+#     - repoURL: "https://github.com/NavaSasson/gitops-config.git"
+#       targetRevision: HEAD
+#       ref: values
+#   destination:
+#     server: "https://kubernetes.default.svc"
+#     namespace: logging
+#   syncPolicy:
+#     automated:
+#       prune: true
+#       selfHeal: true
+#     syncOptions:
+#       - ApplyOutOfSyncOnly=true
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: elasticsearch
-  namespace: argocd
 spec:
-  project: default
-  sources:
-    - repoURL: "https://charts.bitnami.com/bitnami"
-      chart: elasticsearch
-      targetRevision: 21.1.0
-      helm:
-        valueFiles:
-          - $values/values/elastic-values.yaml
-    - repoURL: "https://github.com/NavaSasson/gitops-config.git"
-      targetRevision: HEAD
-      ref: values
   destination:
-    server: "https://kubernetes.default.svc"
+    namespace: argocd
+  source:
+    repoURL: 'https://helm.elastic.co'
+    targetRevision: 7.17.3
+    chart: elasticsearch
+    helm:
+      values: |
+        resources:
+          requests:
+            cpu: "150m"
+            memory: "256Mi"
+        master:
+            masterOnly: false
+            replicaCount: 1
+  destination:
     namespace: logging
+    server: 'https://kubernetes.default.svc'
+  project: default
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - ApplyOutOfSyncOnly=true
+      - CreateNamespace=true

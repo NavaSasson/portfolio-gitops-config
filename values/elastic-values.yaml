@@ -62,6 +62,11 @@ kibana:
   readinessProbe:
     enabled: false
 
+# If you're using self-signed certificates
+extraEnvs:
+  - name: NODE_TLS_REJECT_UNAUTHORIZED
+    value: "0"
+
 # replicas: 1
 # minimumMasterNodes: 1
 # resources:
