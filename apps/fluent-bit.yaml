@@ -195,6 +195,8 @@ spec:
                 Match kube.var.log.containers.*nginx*
                 Host elasticsearch-master.logging.svc.cluster.local
                 Port 9200
+                HTTP_User elastic
+                HTTP_Passwd BgA0jKQ3cmim21ZC
                 Index nginx-con-logs-%Y.%m.%d
                 Type _doc
                 Suppress_Type_Name On
@@ -210,6 +212,8 @@ spec:
                 Match kube.var.log.containers.*recipe*
                 Host elasticsearch-master.logging.svc.cluster.local
                 Port 9200
+                HTTP_User elastic
+                HTTP_Passwd BgA0jKQ3cmim21ZC
                 Index recipe-app-logs-%Y.%m.%d
                 Type _doc
                 Suppress_Type_Name On
