@@ -50,6 +50,9 @@ spec:
             requests:
               storage: 10Gi
           storageClassName: nava-ebs-sc
+        secret:
+          enabled: true
+          password: "BgA0jKQ3cmim21ZC"
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
