@@ -285,6 +285,15 @@ config:
         Tag host.*
         Systemd_Filter _SYSTEMD_UNIT=kubelet.service
         Read_From_Tail On
+    
+    [INPUT]
+        Name prometheus
+        Tag prometheus_metrics
+        Host recipe-app-service
+        Port 5000
+        Path /metrics
+        Scrape_Interval 10
+        Scrape_On_Start True
 
   filters: |
     [FILTER]
@@ -335,6 +344,13 @@ config:
         Match mongodb.*
         Set log_level INFO
         Condition Key_value_does_not_match msg .*error.*
+
+    [FILTER]
+        Name record_modifier
+        Match prometheus_metrics
+        Record hostname recipe-app-prometheus
+        Record app_name recipe-app
+        Record cluster_name recipe-app-cluster
 
   customParsers: |
     [PARSER]
@@ -436,6 +452,26 @@ config:
         HTTP_Passwd 9sRLSqZOhtUpSpyn
         Logstash_Format On
         Logstash_Prefix host
+        Retry_Limit False
+        Suppress_Type_Name On
+        Time_Key @timestamp
+        Include_Tag_Key On
+        Tag_Key tag
+        tls On
+        tls.verify Off
+        Buffer_Size 1MB
+        Trace_Error On
+
+    [OUTPUT]
+        Name es
+        Match prometheus_metrics
+        Host elasticsearch-master
+        Port 9200
+        HTTP_User elastic
+        HTTP_Passwd 9sRLSqZOhtUpSpyn
+        Logstash_Format On
+        Logstash_Prefix metrics
+        Index_Type metrics
         Retry_Limit False
         Suppress_Type_Name On
         Time_Key @timestamp
