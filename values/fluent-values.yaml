@@ -20,7 +20,7 @@ config:
         Skip_Long_Lines On
         Refresh_Interval 10
         DB /var/log/flb_kube.db
-      
+
     [INPUT]
         Name tail
         Path /var/log/containers/recipe-app-ingress*.log
@@ -72,7 +72,7 @@ config:
         Keep_Log Off
         Buffer_Size False
         K8S-Logging.Parser On
-    
+
     [FILTER]
         Name kubernetes
         Match nginx.*
@@ -100,14 +100,13 @@ config:
         Name modify
         Match mongodb.*
         Set log_level ERROR
-        Condition Key_value_matches msg .*error.*        
-    
+        Condition Key_value_matches msg .*error.*
+
     [FILTER]
         Name modify
         Match mongodb.*
         Set log_level INFO
         Condition Key_value_does_not_match msg .*error.*
-    
 
   customParsers: |
     [PARSER]
@@ -175,7 +174,7 @@ config:
     [OUTPUT]
         Name stdout
         Match kube.*
-    
+
     [OUTPUT]
         Name es
         Match recipe-app.*
