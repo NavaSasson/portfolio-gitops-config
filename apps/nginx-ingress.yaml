@@ -1,4 +1,3 @@
-# apps/templates/nginx-ingress.yaml
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -10,9 +9,6 @@ spec:
     chart: ingress-nginx
     repoURL: https://kubernetes.github.io/ingress-nginx
     targetRevision: 4.12.0
-    # repoURL: https://github.com/NavaSasson/gitops-config.git
-    # targetRevision: main
-    # path: charts/ingress-nginx-4.12.0/ingress-nginx
     helm:
       values: |
         controller:
@@ -29,3 +25,8 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+
+    # repoURL: https://github.com/NavaSasson/gitops-config.git
+    # targetRevision: main
+    # path: charts/ingress-nginx-4.12.0/ingress-nginx

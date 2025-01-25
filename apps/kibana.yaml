@@ -10,15 +10,11 @@ spec:
     targetRevision: 8.5.1
     chart: kibana
     helm:
-      values: |
-        resources:
-          requests:
-            cpu: "150m"
-            memory: "256Mi"
-        extraEnvs:
-        - name: NODE_TLS_REJECT_UNAUTHORIZED
-          value: "0"
-        replicas: 1
+      valueFiles:
+        - $values/values/kibana-values.yaml
+  - repoURL: "https://github.com/NavaSasson/gitops-config.git"
+    targetRevision: HEAD
+    ref: values
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
@@ -29,3 +25,14 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+      # helm:
+      # values: |
+      #   resources:
+      #     requests:
+      #       cpu: "150m"
+      #       memory: "256Mi"
+      #   extraEnvs:
+      #   - name: NODE_TLS_REJECT_UNAUTHORIZED
+      #     value: "0"
+      #   replicas: 1

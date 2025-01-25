@@ -1,4 +1,3 @@
-# charts/recipe-app/values.yaml
 replicaCount: 2
 
 image:
@@ -48,39 +47,6 @@ mongodb:
     enabled: true
     runAsUser: 1001
     runAsNonRoot: true
-# mongodb:
-#   persistence:
-#     enabled: true
-#     size: "4Gi"
-#     storageClass: recipe-storage
-#     accessModes:
-#       - ReadWriteOnce
-#   auth:
-#     enabled: true
-#     rootUser: root
-#     usernames: ["admin"]
-#     databases: ["recipes"]
-#     existingSecret: "mongodb-secret"
-#     passwordKey: "mongodb-passwords"
-#     rootPasswordKey: "mongodb-root-password"
-#     replicaSet: "rs0"
-#     debug: true
-#   architecture: replicaset
-#   replicaCount: 3
-#   service:
-#     type: ClusterIP
-#     ports:
-#       mongodb: 27017
-#   arbiter:
-#     enabled: false
-#   securityContext:
-#     enabled: true
-#     fsGroup: 1001
-#     runAsUser: 1001
-#   containerSecurityContext:
-#     enabled: true
-#     runAsNonRoot: true
-#     runAsUser: 1001
 
 ingress:
   enabled: true

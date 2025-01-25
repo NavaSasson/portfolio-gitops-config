@@ -1,592 +1,89 @@
-# config:
-#   service: |
-#     [SERVICE]
-#         Daemon Off
-#         Flush 1
-#         Log_Level debug
-#         Parsers_File parsers.conf
-#         Parsers_File custom_parsers.conf
-#         HTTP_Server On
-#         HTTP_Listen 0.0.0.0
-#         HTTP_Port 2020
-
-#   inputs: |
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/*.log
-#         Parser cri
-#         Tag kube.*
-#         Mem_Buf_Limit 5MB
-#         Skip_Long_Lines On
-#         Refresh_Interval 10
-#         DB /var/log/flb_kube.db
-
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/recipe-app-ingress*.log
-#         multiline.parser docker, cri
-#         Tag nginx.*
-#         Mem_Buf_Limit 100MB
-#         Skip_Long_Lines On
-
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/recipe-app-*.log
-#         Tag recipe-app.*
-#         multiline.parser docker, cri
-#         Mem_Buf_Limit 100MB
-#         Skip_Long_Lines On
-
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/*mongodb*.log
-#         Tag mongodb.*
-#         Parser mongodb_json_parser
-#         Mem_Buf_Limit 100MB
-#         Skip_Long_Lines On
-
-#     [INPUT]
-#         Name systemd
-#         Tag host.*
-#         Systemd_Filter _SYSTEMD_UNIT=kubelet.service
-#         Read_From_Tail On
-
-#   filters: |
-#     [FILTER]
-#         Name kubernetes
-#         Match kube.*
-#         Merge_Log On
-#         Keep_Log Off
-#         K8S-Logging.Parser On
-#         K8S-Logging.Exclude Off
-
-#     [FILTER]
-#         Name grep
-#         Match kube.*
-#         Regex log ^(?!.*\bGET /health\b).*$
-
-#     [FILTER]
-#         Name kubernetes
-#         Match recipe-app.*
-#         Merge_Log On
-#         Keep_Log Off
-#         Buffer_Size False
-#         K8S-Logging.Parser On
-
-#     [FILTER]
-#         Name kubernetes
-#         Match nginx.*
-#         Merge_Log On
-#         Keep_Log Off
-#         Buffer_Size False
-#         K8S-Logging.Parser On
-
-#     [FILTER]
-#         Name parser
-#         Match nginx.*
-#         Key_Name log
-#         Parser nginx_parser
-#         Reserve_Data On
-#         K8S-Logging.Parser On
-
-#     [FILTER]
-#         Name parser
-#         Match mongodb.*
-#         Key_Name log
-#         Parser mongodb_json_parser
-#         Reserve_Data On
-
-#     [FILTER]
-#         Name modify
-#         Match mongodb.*
-#         Set log_level ERROR
-#         Condition Key_value_matches msg .*error.*
-
-#     [FILTER]
-#         Name modify
-#         Match mongodb.*
-#         Set log_level INFO
-#         Condition Key_value_does_not_match msg .*error.*
-
-#   customParsers: |
-#     [PARSER]
-#         Name cri
-#         Format regex
-#         Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[^ ]*) (?<log>.*)$
-#         Time_Key    time
-#         Time_Format %Y-%m-%dT%H:%M:%S.%L%z
-#         Time_Keep   On
-
-#     [PARSER]
-#         Name python
-#         Format regex
-#         Regex ^(?<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3})\s+-\s+(?<name>[^ ]*)\s+-\s+(?<level>[^ ]*)\s+-\s+\[(?<filename>[^\]]*)\]\s+-\s+(?<message>.*)$
-#         Time_Key time
-#         Time_Format %Y-%m-%d %H:%M:%S,%L
-#         Time_Keep On
-
-#     [PARSER]
-#         Name nginx_parser
-#         Format regex
-#         Regex ^(?<remote_addr>[^ ]*) - (?<remote_user>[^ ]*) \[(?<time_local>[^\]]*)\] \"(?<method>[A-Z]+) (?<request>[^ ]*) (?<protocol>[^\"]*)\" (?<status>[0-9]{3}) (?<body_bytes_sent>[0-9]+) \"(?<http_referer>[^\"]*)\" \"(?<http_user_agent>[^\"]*)\"
-#         Time_Key time
-#         Time_Format %d/%b/%Y:%H:%M:%S %z
-
-#     [PARSER]
-#         Name json_parser
-#         Format json
-#         Time_Key time
-#         Time_Format %Y-%m-%dT%H:%M:%S.%NZ
-
-#     [PARSER]
-#         Name regex_parser
-#         Format regex
-#         Regex /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
-#         Time_Format %Y-%m-%dT%H:%M:%S.%N%:z
-
-#     [PARSER]
-#         Name mongodb_json_parser
-#         Format json
-#         Time_Key t.$date
-#         Time_Format %Y-%m-%dT%H:%M:%S.%LZ
-
-#   outputs: |
-#     [OUTPUT]
-#         Name es
-#         Match kube.*
-#         Host elasticsearch-master-hl.logging.svc.cluster.local
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         Logstash_Format On
-#         Logstash_Prefix fluent-bit
-#         Retry_Limit False
-#         Suppress_Type_Name On
-#         Time_Key @timestamp
-#         Include_Tag_Key On
-#         Tag_Key tag
-#         tls Off
-#         tls.verify Off
-#         Buffer_Size 1MB
-#         Trace_Error On
-#         Trace_Output On
-
-#     [OUTPUT]
-#         Name stdout
-#         Match kube.*
-
-#     [OUTPUT]
-#         Name es
-#         Match recipe-app.*
-#         Index recipe-app-logs
-#         Type  _doc
-#         Host elasticsearch-master
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         tls On
-#         tls.verify Off
-#         Logstash_Format On
-#         Logstash_Prefix recipe-app
-#         Retry_Limit False
-#         Suppress_Type_Name On
-
-#     [OUTPUT]
-#         Name es
-#         Match host.*
-#         Index recipe-app-node-logs
-#         Type  _doc
-#         Host elasticsearch-master
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         tls On
-#         tls.verify Off
-#         Logstash_Format On
-#         Logstash_Prefix node
-#         Retry_Limit False
-#         Suppress_Type_Name On
-
-#     [OUTPUT]
-#         Name es
-#         Match nginx.*
-#         Index recipe-app-nginx
-#         Type  _doc
-#         Host elasticsearch-master
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         tls On
-#         tls.verify Off
-#         Logstash_Format On
-#         Logstash_Prefix nginx
-#         Retry_Limit False
-#         Suppress_Type_Name On
-
-#     [OUTPUT]
-#         Name es
-#         Match mongodb.*
-#         Type  _doc
-#         Host elasticsearch-master
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         tls On
-#         tls.verify Off
-#         Logstash_Format On
-#         Logstash_Prefix mongodb
-#         Retry_Limit False
-#         Suppress_Type_Name On
-
-
-
-
-
-
-
-# logLevel: info
-
-# config:
-#   service: |
-#     [SERVICE]
-#         Daemon Off
-#         Flush 1
-#         Log_Level debug
-#         Parsers_File parsers.conf
-#         Parsers_File custom_parsers.conf
-#         HTTP_Server On
-#         HTTP_Listen 0.0.0.0
-#         HTTP_Port 2020
-#         Health_Check On
-
-#   inputs: |
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/*.log
-#         Tag kube.*
-#         multiline.parser docker, cri
-#         Mem_Buf_Limit 5MB
-#         Skip_Long_Lines On
-
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/*recipe-app-ingress*.log
-#         Tag nginx.*
-#         multiline.parser docker, cri
-#         Mem_Buf_Limit 100MB
-#         Skip_Long_Lines On
-
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/*recipe-app*.log
-#         Tag recipe-app.*
-#         multiline.parser docker, cri
-#         Mem_Buf_Limit 100MB
-#         Skip_Long_Lines On
-
-#     [INPUT]
-#         Name tail
-#         Path /var/log/containers/*mongodb*.log
-#         Tag mongodb.*
-#         Parser mongodb_json_parser
-#         Mem_Buf_Limit 100MB
-#         Skip_Long_Lines On
-
-#     [INPUT]
-#         Name systemd
-#         Tag host.*
-#         Systemd_Filter _SYSTEMD_UNIT=kubelet.service
-#         Read_From_Tail On
-
-#   filters: |
-#     [FILTER]
-#         Name kubernetes
-#         Match kube.*
-#         Merge_Log On
-#         Keep_Log Off
-#         Buffer_Size False
-
-#     [FILTER]
-#         Name kubernetes
-#         Match nginx.*
-#         Merge_Log On
-#         Buffer_Size False
-
-#     [FILTER]
-#         Name parser
-#         Match nginx.*
-#         Key_Name log
-#         Parser nginx_parser
-#         Reserve_Data On
-
-#     [FILTER]
-#         Name parser
-#         Match mongodb.*
-#         Key_Name log
-#         Parser mongodb_json_parser
-#         Reserve_Data On
-
-#     [FILTER]
-#         Name modify
-#         Match mongodb.*
-#         Set log_level ERROR
-#         Condition Key_value_matches msg .*error.*
-
-#     [FILTER]
-#         Name modify
-#         Match mongodb.*
-#         Set log_level INFO
-#         Condition Key_value_does_not_match msg .*error.*
-
-#   customParsers: |
-#     [PARSER]
-#         Name nginx_parser
-#         Format regex
-#         Regex ^(?<remote_addr>[^ ]*) - (?<remote_user>[^ ]*) \[(?<time_local>[^\]]*)\] \"(?<method>[A-Z]+) (?<request>[^ ]*) (?<protocol>[^\"]*)\" (?<status>[0-9]{3}) (?<body_bytes_sent>[0-9]+) \"(?<http_referer>[^\"]*)\" \"(?<http_user_agent>[^\"]*)\"
-#         Time_Key time
-#         Time_Format %d/%b/%Y:%H:%M:%S %z
-
-#     [PARSER]
-#         Name mongodb_json_parser
-#         Format json
-#         Time_Key time
-#         Time_Format %Y-%m-%dT%H:%M:%S.%LZ
-    
-#     [PARSER]
-#         Name json_parser
-#         Format json
-#         Time_Key time
-#         Time_Format %Y-%m-%dT%H:%M:%S.%NZ
-
-#     [PARSER]
-#         Name regex_parser
-#         Format regex
-#         Regex /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
-#         Time_Format %Y-%m-%dT%H:%M:%S.%N%:z
-
-#   outputs: |
-#     [OUTPUT]
-#         Name es
-#         Match kube.*
-#         Index fluent-bit
-#         Type  _doc
-#         Host elasticsearch-master.logging.svc.cluster.local
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         Logstash_Format On
-#         Logstash_Prefix kube
-#         Retry_Limit False
-#         Suppress_Type_Name On
-#         tls On
-#         tls.verify Off
-
-#     [OUTPUT]
-#         Name es
-#         Match recipe-app.*
-#         Host elasticsearch-master.logging.svc.cluster.local
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         Logstash_Format On
-#         Logstash_Prefix recipe-app
-#         Retry_Limit False
-#         Suppress_Type_Name On
-#         tls On
-#         tls.verify Off
-
-#     [OUTPUT]
-#         Name es
-#         Match nginx.*
-#         Index nginx-logs
-#         Type  _doc
-#         Host elasticsearch-master.logging.svc.cluster.local
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         Logstash_Format On
-#         Logstash_Prefix nginx
-#         Retry_Limit False
-#         Suppress_Type_Name On
-#         tls On
-#         tls.verify Off
-
-#     [OUTPUT]
-#         Name es
-#         Match mongodb.*
-#         Type  _doc
-#         Host elasticsearch-master.logging.svc.cluster.local
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         Logstash_Format On
-#         Logstash_Prefix mongodb
-#         Retry_Limit False
-#         Suppress_Type_Name On
-#         tls On
-#         tls.verify Off
-
-#     [OUTPUT]
-#         Name es
-#         Match host.*
-#         Index fluent-bit-host
-#         Type  _doc
-#         Host elasticsearch-master.logging.svc.cluster.local
-#         Port 9200
-#         HTTP_User elastic
-#         HTTP_Passwd 9sRLSqZOhtUpSpyn
-#         Logstash_Format On
-#         Logstash_Prefix node
-#         Retry_Limit False
-#         Suppress_Type_Name On
-#         tls On
-#         tls.verify Off
-
-
-# service:
-#   log_level: debug
-
-# config:
-#   parsers: |
-#     [PARSER]
-#         Name nginx
-#         Format regex
-#         Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?:(?:/recipe/(?:category/)?(?<id>[^\/\s\?"]*)?)|(?<path>[^\"]*?))(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")
-#         Time_Key time
-#         Time_Format %d/%b/%Y:%H:%M:%S %z
-
-#     [PARSER]
-#         Name app_json
-#         Format json
-#         Time_Key timestamp
-#         Time_Format %Y-%m-%dT%H:%M:%S.%L
-#         Time_Keep On
-
-#   filters: |
-#     [FILTER]
-#         Name kubernetes
-#         Match kube.*
-#         Merge_Log On
-#         Keep_Log Off
-#         K8S-Logging.Parser On
-#         K8S-Logging.Exclude On
-
-#     [FILTER]
-#         Name parser
-#         Match kube.var.log.containers.*nginx*
-#         Key_Name log
-#         Parser nginx
-#         Reserve_Data On
-
-#     [FILTER]
-#         Name modify
-#         Match kube.var.log.containers.*nginx*
-#         Add source nginx
-
-#     [FILTER]
-#         Name modify
-#         Match kube.var.log.containers.*recipe*
-#         Add source app
-
-#   outputs: |
-#     [OUTPUT]
-#         Name es
-#         Match kube.var.log.containers.*nginx*
-#         Host elasticsearch-master.logging.svc.cluster.local
-#         Port 9200
-#         Index nginx-con-logs-%Y.%m.%d
-#         Type _doc
-#         Suppress_Type_Name On
-#         Retry_Limit 20
-#         Replace_Dots On
-#         net.keepalive Off
-#         Logstash_Format Off
-
-#     [OUTPUT]
-#         Name es
-#         Match kube.var.log.containers.*recipe*
-#         Host elasticsearch-master.logging.svc.cluster.local
-#         Port 9200
-#         Index recipe-app-logs-%Y.%m.%d
-#         Type _doc
-#         Suppress_Type_Name On
-#         Retry_Limit 20
-#         Replace_Dots On
-#         net.keepalive Off
-#         Logstash_Format Off
-
-
-logLevel: info
-
-config:
-  service: |
-    [SERVICE]
-        Daemon Off
-        Flush 1
-        Log_Level debug
-        Parsers_File parsers.conf
-        Parsers_File custom_parsers.conf
-        HTTP_Server On
-        HTTP_Listen 0.0.0.0
-        HTTP_Port 2020
-        Health_Check On
-
-  inputs: |
-    [INPUT]
-        Name tail
-        Path /var/log/containers/*.log
-        Tag kube.*
-        multiline.parser docker, cri
-        Mem_Buf_Limit 5MB
-        Skip_Long_Lines On
-
-  filters: |
-    [FILTER]
-        Name kubernetes
-        Match kube.*
-        Merge_Log On
-        Keep_Log Off
-        Buffer_Size False
-
-  customParsers: |
-    [PARSER]
-        Name nginx_parser
-        Format regex
-        Regex ^(?<remote_addr>[^ ]*) - (?<remote_user>[^ ]*) \[(?<time_local>[^\]]*)\] \"(?<method>[A-Z]+) (?<request>[^ ]*) (?<protocol>[^\"]*)\" (?<status>[0-9]{3}) (?<body_bytes_sent>[0-9]+) \"(?<http_referer>[^\"]*)\" \"(?<http_user_agent>[^\"]*)\"
-        Time_Key time
-        Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    [PARSER]
-        Name mongodb_json_parser
-        Format json
-        Time_Key time
-        Time_Format %Y-%m-%dT%H:%M:%S.%LZ
-    
-    [PARSER]
-        Name json_parser
-        Format json
-        Time_Key time
-        Time_Format %Y-%m-%dT%H:%M:%S.%NZ
-
-    [PARSER]
-        Name regex_parser
-        Format regex
-        Regex /^(?<time>.+) (?<stream>stdout|stderr) [^ ]* (?<log>.*)$/
-        Time_Format %Y-%m-%dT%H:%M:%S.%N%:z
-
-  outputs: |
-    [OUTPUT]
-        Name es
-        Match *
-        Index fluent-bit
-        Type  _doc
-        Host elasticsearch-master.logging.svc.cluster.local
-        Port 9200
-        HTTP_User elastic
-        HTTP_Passwd 9sRLSqZOhtUpSpyn
-        Logstash_Format On
-        Logstash_Prefix kube
-        Retry_Limit False
-        Suppress_Type_Name On
-        tls On
-        tls.verify Off
+  service:
+    log_level: debug
+
+  config:
+    parsers: |
+      [PARSER]
+          Name nginx
+          Format regex
+          Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?
+          Time_Key time
+          Time_Format %d/%b/%Y:%H:%M:%S %z
+
+      [PARSER]
+          Name werkzeug
+          Format regex
+          Regex (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?<module>\w+) - (?<level>\w+) - (?<remote_addr>[^ ]*) - - \[(?:[^\]]*)\] "(?<method>\S+) (?<path>[^ ]*) (?<protocol>[^\"]*)" (?<status_code>\d+)
+          Time_Key timestamp
+          Time_Format %Y-%m-%d %H:%M:%S,%L
+          Types status_code:integer
+
+      [PARSER]
+          Name recipe_logs
+          Format regex
+          Regex (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?<module>\w+) - (?<level>\w+) - Recipe Action: (?<action>\w+) - ID: (?<recipe_id>\w+) - User: (?<user>\w+)
+          Time_Key timestamp
+          Time_Format %Y-%m-%d %H:%M:%S,%L
+          Types recipe_id:string
+
+    filters: |
+      [FILTER]
+          Name kubernetes
+          Match kube.*
+          Merge_Log On
+          Keep_Log Off
+          K8S-Logging.Parser On
+          K8S-Logging.Exclude On
+
+
+      [FILTER]
+          Name parser
+          Match kube.var.log.containers.*nginx*
+          Key_Name log
+          Parser nginx
+          Reserve_Data On
+
+      [FILTER]
+          Name modify
+          Match kube.var.log.containers.*nginx*
+          Add source nginx
+
+      [FILTER]
+          Name modify
+          Match kube.var.log.containers.*recipe*
+          Add source app
+
+    outputs: |
+      [OUTPUT]
+          Name es
+          Match kube.var.log.containers.*nginx*
+          Host elasticsearch-master.logging.svc.cluster.local
+          Port 9200
+          HTTP_User elastic
+          HTTP_Passwd BgA0jKQ3cmim21ZC
+          Index nginx-con-logs-%Y.%m.%d
+          Type _doc
+          Suppress_Type_Name On
+          Retry_Limit 20
+          Replace_Dots On
+          net.keepalive Off
+          Logstash_Format Off
+          TLS On
+          TLS.Verify Off
+
+      [OUTPUT]
+          Name es
+          Match kube.var.log.containers.*recipe*
+          Host elasticsearch-master.logging.svc.cluster.local
+          Port 9200
+          HTTP_User elastic
+          HTTP_Passwd BgA0jKQ3cmim21ZC
+          Index recipe-app-logs-%Y.%m.%d
+          Type _doc
+          Suppress_Type_Name On
+          Retry_Limit 20
+          Replace_Dots On
+          net.keepalive Off
+          Logstash_Format Off
+          TLS On
+          TLS.Verify Off

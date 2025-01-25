@@ -1,21 +1,8 @@
-# replicas: 1
-# resources:
-#   requests:
-#     cpu: "250m"
-#     memory: "512Mi"
-#   limits:
-#     cpu: "500m"
-#     memory: "1Gi"
-# # Use HTTPS for Elasticsearch connection
-# elasticsearch:
-#   hosts: 
-#     - https://elasticsearch-master:9200
-#   ssl:
-#     verificationMode: none  # Be cautious in production
-#   username: elastic
-#   password: 2oIAZM8D9CAalbeg
-
-#   # If you're using self-signed certificates
-# extraEnvs:
-#   - name: NODE_TLS_REJECT_UNAUTHORIZED
-#     value: "0"
+resources:
+  requests:
+    cpu: "150m"
+    memory: "256Mi"
+extraEnvs:
+- name: NODE_TLS_REJECT_UNAUTHORIZED
+  value: "0"
+replicas: 1

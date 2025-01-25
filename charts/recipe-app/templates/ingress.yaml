@@ -28,7 +28,3 @@ spec:
       secretName: {{ .Values.ingress.tls.secretName }}
   {{- end }}
 {{- end }}
-
-
-    # "helm.sh/hook": post-install
-    # "helm.sh/hook-weight": "20"
