@@ -2,16 +2,110 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: fluent-bit
+  namespace: argocd
 spec:
+  project: default
   source:
-  - repoURL: 'https://fluent.github.io/helm-charts'
-    targetRevision: 0.20.5
+    repoURL: 'https://fluent.github.io/helm-charts'
+    targetRevision: 0.46.7
     chart: fluent-bit
     helm:
-      valueFiles:
-        - $values/values/fluent-values.yaml
-  - repoURL: "https://github.com/NavaSasson/gitops-config.git"
-    ref: values
+      values: |
+        env:
+          - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-secret
+                key: elasticsearch-password
+                
+        service:
+          log_level: debug
+        
+        config:
+          parsers: |
+            [PARSER]
+            Name nginx
+            Format regex
+            Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?
+            Time_Key time
+            Time_Format %d/%b/%Y:%H:%M:%S %z
+
+            [PARSER]
+            Name werkzeug
+            Format regex
+            Regex (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?<module>\w+) - (?<level>\w+) - (?<remote_addr>[^ ]*) - - \[(?:[^\]]*)\] "(?<method>\S+) (?<path>[^ ]*) (?<protocol>[^\"]*)" (?<status_code>\d+)
+            Time_Key timestamp
+            Time_Format %Y-%m-%d %H:%M:%S,%L
+            Types status_code:integer
+
+            [PARSER]
+            Name recipe_logs
+            Format regex
+            Regex (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?<module>\w+) - (?<level>\w+) - Recipe Action: (?<action>\w+) - ID: (?<recipe_id>\w+) - User: (?<user>\w+)
+            Time_Key timestamp
+            Time_Format %Y-%m-%d %H:%M:%S,%L
+            Types recipe_id:string
+
+          filters: |
+            [FILTER]
+            Name kubernetes
+            Match kube.*
+            Merge_Log On
+            Keep_Log Off
+            K8S-Logging.Parser On
+            K8S-Logging.Exclude On
+
+            [FILTER]
+            Name parser
+            Match kube.var.log.containers.*nginx*
+            Key_Name log
+            Parser nginx
+            Reserve_Data On
+
+            [FILTER]
+            Name modify
+            Match kube.var.log.containers.*nginx*
+            Add source nginx
+
+            [FILTER]
+            Name modify
+            Match kube.var.log.containers.*recipe*
+            Add source app
+
+          outputs: |
+            [OUTPUT]
+            Name es
+            Match kube.var.log.containers.*nginx*
+            Host elasticsearch-master.logging.svc.cluster.local
+            Port 9200
+            HTTP_User elastic
+            HTTP_Passwd ${ELASTIC_PASSWORD}
+            Index nginx-con-logs-%Y.%m.%d
+            Type _doc
+            Suppress_Type_Name On
+            Retry_Limit 20
+            Replace_Dots On
+            net.keepalive Off
+            Logstash_Format Off
+            TLS On
+            TLS.Verify Off
+
+            [OUTPUT]
+            Name es
+            Match kube.var.log.containers.*recipe*
+            Host elasticsearch-master.logging.svc.cluster.local
+            Port 9200
+            HTTP_User elastic
+            HTTP_Passwd ${ELASTIC_PASSWORD}
+            Index recipe-app-logs-%Y.%m.%d
+            Type _doc
+            Suppress_Type_Name On
+            Retry_Limit 20
+            Replace_Dots On
+            net.keepalive Off
+            Logstash_Format Off
+            TLS On
+            TLS.Verify Off
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
@@ -20,96 +114,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
-
-    # helm:
-    #   values: |
-    #     service:
-    #       log_level: debug
-
-    #     config:
-    #       parsers: |
-    #         [PARSER]
-    #             Name nginx
-    #             Format regex
-    #             Regex ^(?<remote>[^ ]*) (?<host>[^ ]*) (?<user>[^ ]*) \[(?<time>[^\]]*)\] "(?<method>\S+)(?: +(?<path>[^\"]*?)(?: +\S*)?)?" (?<code>[^ ]*) (?<size>[^ ]*)(?: "(?<referer>[^\"]*)" "(?<agent>[^\"]*)")?
-    #             Time_Key time
-    #             Time_Format %d/%b/%Y:%H:%M:%S %z
-
-    #         [PARSER]
-    #             Name werkzeug
-    #             Format regex
-    #             Regex (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?<module>\w+) - (?<level>\w+) - (?<remote_addr>[^ ]*) - - \[(?:[^\]]*)\] "(?<method>\S+) (?<path>[^ ]*) (?<protocol>[^\"]*)" (?<status_code>\d+)
-    #             Time_Key timestamp
-    #             Time_Format %Y-%m-%d %H:%M:%S,%L
-    #             Types status_code:integer
-
-    #         [PARSER]
-    #             Name recipe_logs
-    #             Format regex
-    #             Regex (?<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}) - (?<module>\w+) - (?<level>\w+) - Recipe Action: (?<action>\w+) - ID: (?<recipe_id>\w+) - User: (?<user>\w+)
-    #             Time_Key timestamp
-    #             Time_Format %Y-%m-%d %H:%M:%S,%L
-    #             Types recipe_id:string
-
-    #       filters: |
-    #         [FILTER]
-    #             Name kubernetes
-    #             Match kube.*
-    #             Merge_Log On
-    #             Keep_Log Off
-    #             K8S-Logging.Parser On
-    #             K8S-Logging.Exclude On
-
-
-    #         [FILTER]
-    #             Name parser
-    #             Match kube.var.log.containers.*nginx*
-    #             Key_Name log
-    #             Parser nginx
-    #             Reserve_Data On
-
-    #         [FILTER]
-    #             Name modify
-    #             Match kube.var.log.containers.*nginx*
-    #             Add source nginx
-
-    #         [FILTER]
-    #             Name modify
-    #             Match kube.var.log.containers.*recipe*
-    #             Add source app
-
-    #       outputs: |
-    #         [OUTPUT]
-    #             Name es
-    #             Match kube.var.log.containers.*nginx*
-    #             Host elasticsearch-master.logging.svc.cluster.local
-    #             Port 9200
-    #             HTTP_User elastic
-    #             HTTP_Passwd BgA0jKQ3cmim21ZC
-    #             Index nginx-con-logs-%Y.%m.%d
-    #             Type _doc
-    #             Suppress_Type_Name On
-    #             Retry_Limit 20
-    #             Replace_Dots On
-    #             net.keepalive Off
-    #             Logstash_Format Off
-    #             TLS On
-    #             TLS.Verify Off
-
-    #         [OUTPUT]
-    #             Name es
-    #             Match kube.var.log.containers.*recipe*
-    #             Host elasticsearch-master.logging.svc.cluster.local
-    #             Port 9200
-    #             HTTP_User elastic
-    #             HTTP_Passwd BgA0jKQ3cmim21ZC
-    #             Index recipe-app-logs-%Y.%m.%d
-    #             Type _doc
-    #             Suppress_Type_Name On
-    #             Retry_Limit 20
-    #             Replace_Dots On
-    #             net.keepalive Off
-    #             Logstash_Format Off
-    #             TLS On
-    #             TLS.Verify Off
-      
+    syncOptions:
+      - CreateNamespace=true
