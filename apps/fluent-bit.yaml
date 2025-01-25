@@ -4,14 +4,13 @@ metadata:
   name: fluent-bit
 spec:
   source:
-    repoURL: 'https://fluent.github.io/helm-charts'
+  - repoURL: 'https://fluent.github.io/helm-charts'
     targetRevision: 0.20.5
     chart: fluent-bit
     helm:
       valueFiles:
         - $values/values/fluent-values.yaml
   - repoURL: "https://github.com/NavaSasson/gitops-config.git"
-    targetRevision: HEAD
     ref: values
   destination:
     namespace: logging
