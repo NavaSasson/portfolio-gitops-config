@@ -4,7 +4,7 @@ metadata:
   name: kibana
 spec:
   source:
-    repoURL: 'https://helm.elastic.co'
+  - repoURL: 'https://helm.elastic.co'
     targetRevision: 8.5.1
     chart: kibana
     helm:
