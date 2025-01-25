@@ -3,8 +3,6 @@ kind: Application
 metadata:
   name: kibana
 spec:
-  destination:
-    namespace: argocd
   source:
     repoURL: 'https://helm.elastic.co'
     targetRevision: 8.5.1
