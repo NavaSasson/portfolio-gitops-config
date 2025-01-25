@@ -4,7 +4,7 @@ metadata:
   name: elasticsearch
 spec:
   source:
-  - repoURL: 'https://helm.elastic.co'
+    repoURL: 'https://helm.elastic.co'
     targetRevision: 8.5.1
     chart: elasticsearch
     helm:
@@ -25,9 +25,6 @@ spec:
           enabled: true
           existingSecret: "elasticsearch-secret"
           passwordKey: "elasticsearch-password"
-  - repoURL: "https://github.com/NavaSasson/gitops-config.git"
-    targetRevision: HEAD
-    ref: values
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
