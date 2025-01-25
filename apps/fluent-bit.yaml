@@ -3,7 +3,6 @@ kind: Application
 metadata:
   name: fluent-bit
 spec:
-    server: 'https://kubernetes.default.svc'
   source:
   - repoURL: 'https://fluent.github.io/helm-charts'
     targetRevision: 0.20.5
