@@ -8,8 +8,23 @@ spec:
     targetRevision: 8.5.1
     chart: elasticsearch
     helm:
-      valueFiles:
-        - $values/values/elastic-values.yaml
+      values: |
+        resources:
+          requests:
+            cpu: "150m"
+            memory: "256Mi"
+        replicas: 1
+        minimumMasterNodes: 1
+        volumeClaimTemplate:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+          storageClassName: nava-ebs-sc
+        secret:
+          enabled: true
+          existingSecret: "elasticsearch-secret"
+          passwordKey: "elasticsearch-password"
   - repoURL: "https://github.com/NavaSasson/gitops-config.git"
     targetRevision: HEAD
     ref: values
@@ -24,21 +39,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
 
-
-# helm:
-#       values: |
-#         resources:
-#           requests:
-#             cpu: "150m"
-#             memory: "256Mi"
-#         replicas: 1
-#         minimumMasterNodes: 1
-#         volumeClaimTemplate:
-#           accessModes: ["ReadWriteOnce"]
-#           resources:
-#             requests:
-#               storage: 10Gi
-#           storageClassName: nava-ebs-sc
-#         secret:
-#           enabled: true
-#           password: "BgA0jKQ3cmim21ZC"
+      # password: "BgA0jKQ3cmim21ZC"
