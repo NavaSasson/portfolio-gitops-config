@@ -1,8 +1,0 @@
-resources:
-  requests:
-    cpu: "150m"
-    memory: "256Mi"
-extraEnvs:
-- name: NODE_TLS_REJECT_UNAUTHORIZED
-  value: "0"
-replicas: 1
