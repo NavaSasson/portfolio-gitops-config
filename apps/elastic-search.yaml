@@ -31,10 +31,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
-      # password: "BgA0jKQ3cmim21ZC"
-
-          #     secret:
-          # enabled: true
-          # existingSecret: "elasticsearch-secret"
-          # passwordKey: "elasticsearch-password"
