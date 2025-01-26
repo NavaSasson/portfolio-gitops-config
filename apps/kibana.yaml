@@ -9,10 +9,6 @@ spec:
     chart: kibana
     helm:
       values: |
-        resources:
-          requests:
-            cpu: "150m"
-            memory: "256Mi"
         extraEnvs:
         - name: NODE_TLS_REJECT_UNAUTHORIZED
           value: "0"
@@ -27,3 +23,9 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+
+
+          #     resources:
+          # requests:
+          #   cpu: "150m"
+          #   memory: "256Mi"
