@@ -16,6 +16,11 @@ spec:
         extraEnvs:
         - name: NODE_TLS_REJECT_UNAUTHORIZED
           value: "0"
+        - name: ELASTIC_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elasticsearch-secret
+                key: elasticsearch-password
         replicas: 1
   destination:
     namespace: logging
