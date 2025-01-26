@@ -4,15 +4,19 @@ metadata:
   name: kibana
 spec:
   source:
-  - repoURL: 'https://helm.elastic.co'
+    repoURL: 'https://helm.elastic.co'
     targetRevision: 8.5.1
     chart: kibana
     helm:
-      valueFiles:
-        - $values/values/kibana-values.yaml
-  - repoURL: "https://github.com/NavaSasson/gitops-config.git"
-    targetRevision: HEAD
-    ref: values
+      values: |
+        resources:
+          requests:
+            cpu: "150m"
+            memory: "256Mi"
+        extraEnvs:
+        - name: NODE_TLS_REJECT_UNAUTHORIZED
+          value: "0"
+        replicas: 1
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'
@@ -23,14 +27,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
-      # helm:
-      # values: |
-      #   resources:
-      #     requests:
-      #       cpu: "150m"
-      #       memory: "256Mi"
-      #   extraEnvs:
-      #   - name: NODE_TLS_REJECT_UNAUTHORIZED
-      #     value: "0"
-      #   replicas: 1
