@@ -23,8 +23,8 @@ spec:
           storageClassName: nava-ebs-sc
         secret:
           enabled: true
-          existingSecret: "elasticsearch-secret"
-          passwordKey: "elasticsearch-password"
+          existingSecret: "elasticsearch-master-credentials"
+          passwordKey: "password"
   destination:
     namespace: logging
     server: 'https://kubernetes.default.svc'

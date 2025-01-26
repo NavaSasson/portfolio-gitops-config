@@ -15,8 +15,8 @@ spec:
           - name: ELASTIC_PASSWORD
             valueFrom:
               secretKeyRef:
-                name: elasticsearch-secret
-                key: elasticsearch-password
+                name: elasticsearch-master-credentials
+                key: password
                 
         service:
           log_level: debug
