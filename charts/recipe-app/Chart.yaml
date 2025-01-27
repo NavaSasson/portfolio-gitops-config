@@ -8,4 +8,4 @@ dependencies:
   - name: mongodb
     version: "16.4.0"
     # repository: "file://../charts/mongodb-16.4.0.tgz"
-    repository: "https://charts.bitnami.com/bitnami"
+    # repository: "https://charts.bitnami.com/bitnami"
