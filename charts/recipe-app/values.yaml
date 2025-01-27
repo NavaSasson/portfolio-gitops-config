@@ -2,7 +2,7 @@ replicaCount: 2
 
 image:
   repository: 600627353694.dkr.ecr.ap-south-1.amazonaws.com/nava-recipe-app
-  appVersion: "1.0.3"
+  tag: ""
   pullPolicy: Always
 
 # MongoDB values
@@ -52,15 +52,15 @@ ingress:
   enabled: true
   className: nginx
   annotations:
-    clusterIssuer: letsencrypt-staging
+    clusterIssuer: letsencrypt-prod
   host: recipe-app.hopto.org
   tls:
     enabled: true
-    secretName: recipe-app-staging-tls
+    secretName: recipe-app-prod-tls
 
 certManager:
-  # server: https://acme-v02.api.letsencrypt.org/directory
-  server: https://acme-staging-v02.api.letsencrypt.org/directory
+  server: https://acme-v02.api.letsencrypt.org/directory
+  # server: https://acme-staging-v02.api.letsencrypt.org/directory
   email: nava7386@gmail.com
 
 configMap:
